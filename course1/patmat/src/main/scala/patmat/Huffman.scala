@@ -104,8 +104,11 @@ object Huffman {
    * unchanged.
    */
     def combine(trees: List[CodeTree]): List[CodeTree] = {
-      val sortedTree: List[CodeTree] = trees.sortBy(weight)
-      (makeCodeTree(sortedTree.head, sortedTree.tail.head) :: sortedTree.slice(2, sortedTree.length)).sortBy(weight)
+      if(singleton(trees) || trees.isEmpty) trees
+      else {
+        val sortedTree: List[CodeTree] = trees.sortBy(weight)
+        (makeCodeTree(sortedTree.head, sortedTree.tail.head) :: sortedTree.slice(2, sortedTree.length)).sortBy(weight)
+      }
     }
   
   /**
