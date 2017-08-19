@@ -38,7 +38,7 @@ trait Solver extends GameDef {
    */
   def newNeighborsOnly(neighbors: Stream[(Block, List[Move])],
                        explored: Set[Block]): Stream[(Block, List[Move])] =
-    neighbors.filter(next => !explored.contains(next._1))
+    neighbors.filter(next => next._1.isLegal && !explored.contains(next._1))
 
   /**
    * The function `from` returns the stream of all possible paths
@@ -96,5 +96,5 @@ trait Solver extends GameDef {
    * the first move that the player should perform from the starting
    * position.
    */
-  lazy val solution: List[Move] = pathsToGoal.minBy(_._2.length)._2
+  lazy val solution: List[Move] = pathsToGoal.minBy(_._2.length)._2.reverse
 }
