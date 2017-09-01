@@ -36,9 +36,26 @@ object Main {
 
       loop(0, 0, chars)
     }
+
+  /*
+   - 가장 큰돈 보다 남은 돈이 클 경우
+    * 가장 큰 돈을 한번 더 빼본다.
+    * 그 다음 큰돈을 한번 적용 해본다.
+   - 가장 큰돈 보다 남은 돈이 적을 경우
+    * 다음으로 큰돈으로 적용 해본다.
+   */
   
   /**
    * Exercise 3
    */
-    def countChange(money: Int, coins: List[Int]): Int = ???
+    def countChange(money: Int, coins: List[Int]): Int = {
+      def subtractMoney(moneyRemain: Int, coins: List[Int]): Int = {
+        if(moneyRemain == 0) 1
+        else if(coins.isEmpty) 0
+        else if(moneyRemain >= coins.head) subtractMoney(moneyRemain - coins.head, coins) + subtractMoney(moneyRemain, coins.tail)
+        else subtractMoney(moneyRemain, coins.tail)
+      }
+
+      subtractMoney(money, coins.reverse)
+    }
   }
