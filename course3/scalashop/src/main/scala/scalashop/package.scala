@@ -42,7 +42,7 @@ package object scalashop {
   /** Computes the blurred RGBA value of a single pixel of the input image. */
   def boxBlurKernel(src: Img, x: Int, y: Int, radius: Int): RGBA = {
     def isInTheSrc(x: Int, y: Int): Boolean = {
-      clamp(x, 0, src.width) == x && clamp(y, 0, src.height) == y
+      clamp(x, 0, src.width - 1) == x && clamp(y, 0, src.height - 1) == y
     }
 
     val pixels: ListBuffer[Int] = ListBuffer.empty
