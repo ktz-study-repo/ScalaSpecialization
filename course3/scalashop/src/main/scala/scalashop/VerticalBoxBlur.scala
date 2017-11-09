@@ -45,10 +45,8 @@ object VerticalBoxBlur {
     * bottom.
     */
   def blur(src: Img, dst: Img, from: Int, end: Int, radius: Int): Unit = {
-    // TODO implement this method using the `boxBlurKernel` method
-    for (x <- from until end; y <- 0 until src.height) {
-      dst.update(x, y, boxBlurKernel(src, x, y, radius))
-    }
+    for (x <- from until end; y <- 0 until src.height)
+        dst.update(x, y, boxBlurKernel(src, x, y, radius))
   }
 
   /** Blurs the columns of the source image in parallel using `numTasks` tasks.
@@ -58,15 +56,15 @@ object VerticalBoxBlur {
     * columns.
     */
   def parBlur(src: Img, dst: Img, numTasks: Int, radius: Int): Unit = {
-    // TODO implement using the `task` construct and the `blur` method
     def splitWidth(width: Int, task: Int): List[(Int, Int)] = {
       val nList: List[Int] = (0 until width).toList
-      nList.grouped(math.ceil(nList.length / task.toDouble).toInt).toList.map(l => (l.head, l.last))
+      nList.zipWithIndex.grouped(math.ceil(nList.length / task.toDouble).toInt).toList
+        .map(l => (l.head._2, l.last._2))
     }
 
     println(splitWidth(src.width, numTasks))
     val tasks: List[ForkJoinTask[Unit]] = splitWidth(src.width, numTasks).map {
-      case (start, end) => task(blur(src, dst, start, end, radius))
+      case (start, end) => task(blur(src, dst, start, end + 1, radius))
     }
     tasks.foreach(_.join())
   }

@@ -1,7 +1,11 @@
 package scalashop
 
+import java.util.concurrent.ForkJoinTask
+
 import org.scalameter._
 import common._
+
+import scalashop.VerticalBoxBlur.blur
 
 object HorizontalBoxBlurRunner {
 
@@ -42,9 +46,9 @@ object HorizontalBoxBlur {
    *  Within each row, `blur` traverses the pixels by going from left to right.
    */
   def blur(src: Img, dst: Img, from: Int, end: Int, radius: Int): Unit = {
-  // TODO implement this method using the `boxBlurKernel` method
-
-  ???
+    for (y <- from until end; x <- 0 until src.width) {
+      dst.update(x, y, boxBlurKernel(src, x, y, radius))
+    }
   }
 
   /** Blurs the rows of the source image in parallel using `numTasks` tasks.
@@ -54,9 +58,16 @@ object HorizontalBoxBlur {
    *  rows.
    */
   def parBlur(src: Img, dst: Img, numTasks: Int, radius: Int): Unit = {
-  // TODO implement using the `task` construct and the `blur` method
+    def splitHeight(height: Int, task: Int): List[(Int, Int)] = {
+      val nList: List[Int] = (0 until height).toList
+      nList.zipWithIndex.grouped(math.ceil(nList.length / task.toDouble).toInt).toList
+        .map(l => (l.head._2, l.last._2))
+    }
 
-  ???
+    val tasks: List[ForkJoinTask[Unit]] = splitHeight(src.height, numTasks).map {
+      case (start, end) => task(blur(src, dst, start, end + 1, radius))
+    }
+    tasks.foreach(_.join())
   }
 
 }
